@@ -8,6 +8,13 @@ from dotenv import load_dotenv
 import http.client
 import copy
 
+composeFolder = "docker-compose/"
+composeFolderNoRulesEngine = "docker-compose-no-rulesengine/"
+fullComposeFile = "docker-compose.yml"
+composeFileNoSecty = "docker-compose-no-secty.yml"
+composeFileRedisNoSecty = "docker-compose-redis-no-secty.yml"
+mqttComposefile = "docker-compose-mqtt.yml"
+
 services = {
     "core-data": {"composeName": "data", "port": 48080, "url": "/api/v1/ping"},
     "core-metadata": {"composeName": "metadata", "port": 48081, "url": "/api/v1/ping"},
@@ -21,7 +28,6 @@ services = {
     "device-virtual": {"composeName": "device-virtual", "port": 49990, "url": "/api/v1/ping"},
 }
 
-
 class EdgeX(object):
 
     def __init__(self):
@@ -29,52 +35,74 @@ class EdgeX(object):
 
     def pull_the_edgex_docker_images(self):
         cmd = docker_compose_cmd()
-        cmd.append('pull')
+        #cmd.append('pull')
+        cmd.extend(['-f', composeFolder + fullComposeFile, 'pull'])
         run_command(cmd)
 
     def edgex_is_deployed(self):
         # Deploy services
         cmd = docker_compose_cmd()
-        cmd.extend(['up', '-d'])
+        cmd.extend(['-f', composeFolder + fullComposeFile, 'up', '-d'])
+        run_command(cmd)
+
+        # Check services are started
+        check_dependencies_services_startup(services)
+    
+    def edgex_is_deployed_no_secty(self):
+        # Deploy services
+        cmd = docker_compose_cmd()
+        cmd.extend(['-f', composeFolder + composeFileNoSecty,'up', '-d'])
         run_command(cmd)
 
         # Check services are started
         check_dependencies_services_startup(services)
 
-    def edgex_is_deployed_exclude_ruleengine(self):
+    def edgex_with_redis_is_deployed_no_secty(self):
         # Deploy services
         cmd = docker_compose_cmd()
-        cmd.extend(['-f', 'docker-compose-exclude-ruleengine.yml', 'up', '-d'])
+        cmd.extend(['-f', composeFolder + composeFileRedisNoSecty,'up', '-d'])
+        run_command(cmd)
+
+        # Check services are started
+        check_dependencies_services_startup(services)
+
+    def edgex_is_deployed_exclude_rulesengine(self):
+        # Deploy services
+        cmd = docker_compose_cmd()
+        cmd.extend(['-f', composeFolderNoRulesEngine + fullComposeFile, 'up', '-d'])
         run_command(cmd)
 
         # Check services are started
         dependencies = copy.deepcopy(services)
-        dependencies.pop("support-rulesengine", None)  # exclude ruleengine
+        dependencies.pop("support-rulesengine", None)  # exclude rulesengine
         check_dependencies_services_startup(dependencies)
 
-    def edgex_is_deployed_with_compose_file(self, file_name):
+    def edgex_is_deployed_exclude_rulesengine_no_secty(self):
         # Deploy services
         cmd = docker_compose_cmd()
-        cmd.extend(['-f', file_name, 'up', '-d'])
+        cmd.extend(['-f', composeFolderNoRulesEngine + composeFileNoSecty, 'up', '-d'])
         run_command(cmd)
 
         # Check services are started
         dependencies = copy.deepcopy(services)
-        dependencies.pop("support-rulesengine", None)  # exclude ruleengine
+        dependencies.pop("support-rulesengine", None)  # exclude rulesengine
         check_dependencies_services_startup(dependencies)
-        time.sleep(10)
+
+    def edgex_with_redis_is_deployed_exclude_rulesengine_no_secty(self):
+        # Deploy services
+        cmd = docker_compose_cmd()
+        cmd.extend(['-f', composeFolderNoRulesEngine + composeFileRedisNoSecty, 'up', '-d'])
+        run_command(cmd)
+
+        # Check services are started
+        dependencies = copy.deepcopy(services)
+        dependencies.pop("support-rulesengine", None)  # exclude rulesengine
+        check_dependencies_services_startup(dependencies)
 
     def shutdown_edgex(self):
         cmd = docker_compose_cmd()
-        cmd.append('down')
-        run_command(cmd)
-
-        cmd = ['docker', 'volume', 'prune', '-f']
-        run_command(cmd)
-
-    def shutdown_edgex_with_compose_file(self, file_name):
-        cmd = docker_compose_cmd()
-        cmd.extend(['-f', file_name, 'down'])
+        #cmd.append('down')
+        cmd.extend(['-f', composeFolder + fullComposeFile, 'down'])
         run_command(cmd)
 
         cmd = ['docker', 'volume', 'prune', '-f']
@@ -82,24 +110,128 @@ class EdgeX(object):
 
     def stop_edgex(self):
         cmd = docker_compose_cmd()
-        cmd.append('stop')
+        #cmd.append('stop')
+        cmd.extend(['-f', composeFolder + fullComposeFile,'stop'])
         run_command(cmd)
 
-    def dependecy_services_are_deployed(self, *args):
+    def shutdown_edgex_no_secty(self):
+        cmd = docker_compose_cmd()
+        #cmd.append('down')
+        cmd.extend(['-f', composeFolder + composeFileNoSecty, 'down'])
+        run_command(cmd)
+
+        cmd = ['docker', 'volume', 'prune', '-f']
+        run_command(cmd)
+
+    def shutdown_edgex_redis(self):
+        cmd = docker_compose_cmd()
+        #cmd.append('down')
+        cmd.extend(['-f', composeFolder + composeFileRedisNoSecty, 'down'])
+        run_command(cmd)
+
+        cmd = ['docker', 'volume', 'prune', '-f']
+        run_command(cmd)
+
+    def stop_edgex_redis(self):
+        cmd = docker_compose_cmd()
+        #cmd.append('stop')
+        cmd.extend(['-f', composeFolder + composeFileRedisNoSecty,'stop'])
+        run_command(cmd)
+
+    def shutdown_edgex_no_rulesengine(self):
+        cmd = docker_compose_cmd()
+        #cmd.append('down')
+        cmd.extend(['-f', composeFolderNoRulesEngine + fullComposeFile, 'down'])
+        run_command(cmd)
+
+        cmd = ['docker', 'volume', 'prune', '-f']
+        run_command(cmd)
+
+    def stop_edgex_no_rulesengine(self):
+        cmd = docker_compose_cmd()
+        #cmd.append('stop')
+        cmd.extend(['-f', composeFolderNoRulesEngine + fullComposeFile,'stop'])
+        run_command(cmd)
+
+    def shutdown_edgex_no_rulesengine_no_secty(self):
+        cmd = docker_compose_cmd()
+        #cmd.append('down')
+        cmd.extend(['-f', composeFolderNoRulesEngine + composeFileNoSecty, 'down'])
+        run_command(cmd)
+
+        cmd = ['docker', 'volume', 'prune', '-f']
+        run_command(cmd)
+
+    def shutdown_edgex_redis_no_rulesengine(self):
+        cmd = docker_compose_cmd()
+        #cmd.append('down')
+        cmd.extend(['-f', composeFolderNoRulesEngine + composeFileRedisNoSecty, 'down'])
+        run_command(cmd)
+
+        cmd = ['docker', 'volume', 'prune', '-f']
+        run_command(cmd)
+
+    def stop_edgex_redis_no_rulesengine(self):
+        cmd = docker_compose_cmd()
+        #cmd.append('stop')
+        cmd.extend(['-f', composeFolderNoRulesEngine + composeFileRedisNoSecty,'stop'])
+        run_command(cmd)
+    
+    def edgex_is_deployed_with_compose_file(self, mqttComposefile):
+        # Deploy services
+        cmd = docker_compose_cmd()
+        cmd.extend(['-f', composeFolder + mqttComposefile, 'up', '-d'])
+        run_command(cmd)
+
+        # Check services are started
+        dependencies = copy.deepcopy(services)
+        dependencies.pop("support-rulesengine", None)  # exclude ruleengine
+        check_dependencies_services_startup(dependencies)
+        time.sleep(10)
+    
+    def shutdown_edgex_with_compose_file(self, mqttComposefile):
+        cmd = docker_compose_cmd()
+        cmd.extend(['-f', composeFolder + mqttComposefile, 'down'])
+        run_command(cmd)
+
+        cmd = ['docker', 'volume', 'prune', '-f']
+        run_command(cmd)
+
+    def dependency_services_are_deployed_mongo(self, *args):
         dependencies = dict()
         for arg in args:
             dependencies[arg] = services[arg]
 
         # Deploy services (default: mongo, consul, config-seed )
         cmd = docker_compose_cmd()
-        cmd.extend(['up', '-d', "mongo"])
+        cmd.extend(['-f', composeFolder + fullComposeFile,'up', '-d', "mongo"])
         run_command(cmd)
         cmd = docker_compose_cmd()
-        cmd.extend(['up', '-d', "config-seed"])
+        cmd.extend(['-f', composeFolder + fullComposeFile,'up', '-d', "config-seed"])
         run_command(cmd)
         for k in dependencies:
             cmd = docker_compose_cmd()
-            cmd.extend(['up', '-d', dependencies[k]["composeName"]])
+            cmd.extend(['-f', composeFolder + fullComposeFile,'up', '-d', dependencies[k]["composeName"]])
+            run_command(cmd)
+
+        # Check services are started
+        check_dependencies_services_startup(dependencies)
+    
+    def dependency_services_are_deployed_redis(self, *args):
+        dependencies = dict()
+        for arg in args:
+            dependencies[arg] = services[arg]
+
+        # Deploy services (default: redis, consul, config-seed )
+        cmd = docker_compose_cmd()
+        cmd.extend(['-f', composeFolder + composeFileRedisNoSecty,'up', '-d', "redis"])
+        run_command(cmd)
+        cmd = docker_compose_cmd()
+        cmd.extend(['-f', composeFolder + composeFileRedisNoSecty,'up', '-d', "config-seed"])
+        run_command(cmd)
+        for k in dependencies:
+            cmd = docker_compose_cmd()
+            cmd.extend(['-f', composeFolder + composeFileRedisNoSecty,'up', '-d', dependencies[k]["composeName"]])
             run_command(cmd)
 
         # Check services are started
@@ -108,7 +240,17 @@ class EdgeX(object):
     def deploy_service(self, service):
         # Deploy service
         cmd = docker_compose_cmd()
-        cmd.extend(['up', '-d', services[service]["composeName"]])
+        cmd.extend(['-f', composeFolder + fullComposeFile,'up', '-d', services[service]["composeName"]])
+        run_command(cmd)
+
+        # Check services are started
+        logger.info("Check service " + service + " is startup...", also_console=True)
+        check_service_startup(services[service])
+    
+    def deploy_service_redis(self, service):
+        # Deploy service
+        cmd = docker_compose_cmd()
+        cmd.extend(['-f', composeFolder + composeFileRedisNoSecty,'up', '-d', services[service]["composeName"]])
         run_command(cmd)
 
         # Check services are started

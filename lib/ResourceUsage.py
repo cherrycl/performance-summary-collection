@@ -22,6 +22,14 @@ services = {
     "edgex-support-rulesengine": {"binary": "/edgex/edgex-support-rulesengine/support-rulesengine.jar"},
     "edgex-device-virtual": {"binary": "/device-virtual"}
 }
+secty_services = {
+    "edgex-vault": {"binary": ""},
+    "edgex-vault-work": {"binary": ""},
+    "kong-db": {"binary": ""},
+    "kong-migration": {"binary": ""},
+    "kong": {"binary": ""},
+    "edgex-proxy": {"binary": "/proxy"}
+}
 
 
 class ResourceUsage(object):

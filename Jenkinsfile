@@ -1,5 +1,6 @@
 pipeline {
     agent { label "docker-${params.ARCH}" }
+    options { timestamps() }
     stages {
         stage('Run test') {
             steps {

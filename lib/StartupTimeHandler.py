@@ -10,13 +10,13 @@ import copy
 
 client = docker.from_env()
 
-msgRegex = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z app=\S* \S*=\S* msg=\"Service started in: \d*.\d*m?s"
+msgRegex = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z app=\S* \S*=\S* msg=\"Service started in: \d*.\d*[mµ]?s"
 startupDatetimeRegex = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{0,6}"
-binaryStartupTimeRegex = r"\d*.\d*m?s"
+binaryStartupTimeRegex = r"\d*.\d*[mµ]?s"
 
-ruleengineRegexMsg = r"\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d+\] boot - \d  INFO \[main\] --- Application: Started Application in \d+.\d+ seconds"
-ruleengineRegexTime = r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{0,3}"
-ruleengineRegexBinaryStartupTime = r"\d*.\d* seconds"
+rulesengineRegexMsg = r"\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d+\] boot - \d  INFO \[main\] --- Application: Started Application in \d+.\d+ seconds"
+rulesengineRegexTime = r"\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{0,3}"
+rulesengineRegexBinaryStartupTime = r"\d*.\d* seconds"
 
 services = {
     "core-data": {"containerName": "edgex-core-data",
@@ -44,8 +44,8 @@ services = {
                       "msgRegex": msgRegex, "startupDatetimeRegex": startupDatetimeRegex,
                       "binaryStartupTimeRegex": binaryStartupTimeRegex},
     "support-rulesengine": {"containerName": "edgex-support-rulesengine",
-                            "msgRegex": ruleengineRegexMsg, "startupDatetimeRegex": ruleengineRegexTime,
-                            "binaryStartupTimeRegex": ruleengineRegexBinaryStartupTime},
+                            "msgRegex": rulesengineRegexMsg, "startupDatetimeRegex": rulesengineRegexTime,
+                            "binaryStartupTimeRegex": rulesengineRegexBinaryStartupTime},
     "device-virtual": {"containerName": "edgex-device-virtual",
                        "msgRegex": msgRegex, "startupDatetimeRegex": startupDatetimeRegex,
                        "binaryStartupTimeRegex": binaryStartupTimeRegex},
@@ -63,6 +63,7 @@ def fetch_service_start_up_time_by_container_name(d, start_time, result):
         try:
             container = client.containers.get(container_name)
             msg = container.logs(until=int(time.time()))
+            msg = msg.decode('unicode-escape').encode('latin1').decode('utf-8')  # for 'µ'
             res = parse_started_time_by_service(msg, d)
 
             startup_datetime_timestamp = convert_startup_datetime_to_timestamp(res["startupDateTime"])
@@ -137,10 +138,10 @@ def show_the_comparison_table_in_html(title, case1, case2):
                 Startup time(Container+Binary)
             </th>
             <th style="border: 1px solid black;">
-                Startup time(Binary) <br/> without recreate container 
+                Startup time(Binary) <br/> without creating container
             </th>
             <th style="border: 1px solid black;">
-                Startup time(Container+Binary)<br/> without recreate container
+                Startup time(Container+Binary)<br/> without creating container
             </th>
         </tr>
     """.format(title)
