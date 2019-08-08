@@ -8,144 +8,144 @@ Library         ../lib/AllServicesStartupOneByOne.py
 
 *** Test Cases ***
 Get core-data start up with creating containers
-    Given dependency services are deployed mongo       support-logging
+    Given dependency services are deployed redis       support-logging
     And start time is recorded
-    When deploy service      core-data
+    When deploy service redis      core-data
     Then fetch startup time from service     core-data
-    [Teardown]  Stop EdgeX
+    [Teardown]  Stop EdgeX Redis
 
 Get core-data start up without creating containers
-    Given dependency services are deployed mongo     support-logging
+    Given dependency services are deployed redis     support-logging
     And start time is recorded
-    When deploy service      core-data
+    When deploy service redis      core-data
     Then fetch startup time from service without recreate     core-data
-    [Teardown]  Shutdown EdgeX
+    [Teardown]  Shutdown EdgeX Redis
 
 Get core-metadata start up with creating containers
-    Given dependency services are deployed mongo       support-logging
+    Given dependency services are deployed redis       support-logging
     And start time is recorded
-    When deploy service      core-metadata
+    When deploy service redis      core-metadata
     Then fetch startup time from service     core-metadata
-    [Teardown]  Stop EdgeX
+    [Teardown]  Stop EdgeX Redis
 
 Get core-metadata start up without creating containers
-    Given dependency services are deployed mongo     support-logging
+    Given dependency services are deployed redis     support-logging
     And start time is recorded
-    When deploy service      core-metadata
+    When deploy service redis      core-metadata
     Then fetch startup time from service without recreate     core-metadata
-    [Teardown]  Shutdown EdgeX
+    [Teardown]  Shutdown EdgeX Redis
 
 Get core-command start up with creating containers
-    Given dependency services are deployed mongo       support-logging     core-metadata
+    Given dependency services are deployed redis       support-logging     core-metadata
     And start time is recorded
-    When deploy service      core-command
+    When deploy service redis      core-command
     Then fetch startup time from service     core-command
-    [Teardown]  Stop EdgeX
+    [Teardown]  Stop EdgeX Redis
 
 Get core-command start up without creating containers
-    Given dependency services are deployed mongo     support-logging       core-metadata
+    Given dependency services are deployed redis     support-logging       core-metadata
     And start time is recorded
-    When deploy service      core-command
+    When deploy service redis      core-command
     Then fetch startup time from service without recreate     core-command
-    [Teardown]  Shutdown EdgeX
+    [Teardown]  Shutdown EdgeX Redis
 
 Get support-logging start up with creating containers
-    Given dependency services are deployed mongo
+    Given dependency services are deployed redis
     And start time is recorded
-    When deploy service      support-logging
+    When deploy service redis      support-logging
     Then fetch startup time from service     support-logging
-    [Teardown]  Stop EdgeX
+    [Teardown]  Stop EdgeX Redis
 
 Get support-logging start up without creating containers
-    Given dependency services are deployed mongo
+    Given dependency services are deployed redis
     And start time is recorded
-    When deploy service      support-logging
+    When deploy service redis      support-logging
     Then fetch startup time from service without recreate     support-logging
-    [Teardown]  Shutdown EdgeX
+    [Teardown]  Shutdown EdgeX Redis
 
 Get support-notifications start up with creating containers
-    Given dependency services are deployed mongo       support-logging
+    Given dependency services are deployed redis       support-logging
     And start time is recorded
-    When deploy service      support-notifications
+    When deploy service redis      support-notifications
     Then fetch startup time from service     support-notifications
-    [Teardown]  Stop EdgeX
+    [Teardown]  Stop EdgeX Redis
 
 Get support-notifications start up without creating containers
-    Given dependency services are deployed mongo       support-logging
+    Given dependency services are deployed redis       support-logging
     And start time is recorded
-    When deploy service      support-notifications
+    When deploy service redis      support-notifications
     Then fetch startup time from service without recreate     support-notifications
-    [Teardown]  Shutdown EdgeX
+    [Teardown]  Shutdown EdgeX Redis
 
 Get support-scheduler start up with creating containers
-    Given dependency services are deployed mongo       support-logging
+    Given dependency services are deployed redis       support-logging
     And start time is recorded
-    When deploy service      support-scheduler
+    When deploy service redis      support-scheduler
     Then fetch startup time from service     support-scheduler
-    [Teardown]  Stop EdgeX
+    [Teardown]  Stop EdgeX Redis
 
 Get support-scheduler start up without creating containers
-    Given dependency services are deployed mongo       support-logging
+    Given dependency services are deployed redis       support-logging
     And start time is recorded
-    When deploy service      support-scheduler
+    When deploy service redis      support-scheduler
     Then fetch startup time from service without recreate     support-scheduler
-    [Teardown]  Shutdown EdgeX
+    [Teardown]  Shutdown EdgeX Redis
 
 Get support-rulesengine start up with creating containers
-    Given dependency services are deployed mongo       support-logging     core-data       export-client
+    Given dependency services are deployed redis       support-logging     core-data       export-client
     And start time is recorded
-    When deploy service      support-rulesengine
+    When deploy service redis      support-rulesengine
     Then fetch startup time from service     support-rulesengine
-    [Teardown]  Stop EdgeX
+    [Teardown]  Stop EdgeX Redis
 
 Get support-rulesengine start up without creating containers
-    Given dependency services are deployed mongo       support-logging     core-data       export-client
+    Given dependency services are deployed redis       support-logging     core-data       export-client
     And start time is recorded
-    When deploy service      support-rulesengine
+    When deploy service redis      support-rulesengine
     Then fetch startup time from service without recreate     support-rulesengine
-    [Teardown]  Shutdown EdgeX
+    [Teardown]  Shutdown EdgeX Redis
 
 Get export-client start up with creating containers
-    Given dependency services are deployed mongo       support-logging     core-data
+    Given dependency services are deployed redis       support-logging     core-data
     And start time is recorded
-    When deploy service      export-client
+    When deploy service redis      export-client
     Then fetch startup time from service     export-client
-    [Teardown]  Stop EdgeX
+    [Teardown]  Stop EdgeX Redis
 
 Get export-client start up without creating containers
-    Given dependency services are deployed mongo       support-logging     core-data
+    Given dependency services are deployed redis       support-logging     core-data
     And start time is recorded
-    When deploy service      export-client
+    When deploy service redis      export-client
     Then fetch startup time from service without recreate     export-client
-    [Teardown]  Shutdown EdgeX
+    [Teardown]  Shutdown EdgeX Redis
 
 Get export-distro start up with creating containers
-    Given dependency services are deployed mongo       support-logging     core-data       export-client
+    Given dependency services are deployed redis       support-logging     core-data       export-client
     And start time is recorded
-    When deploy service      export-distro
+    When deploy service redis      export-distro
     Then fetch startup time from service     export-distro
-    [Teardown]  Stop EdgeX
+    [Teardown]  Stop EdgeX Redis
 
 Get export-distro start up without creating containers
-    Given dependency services are deployed mongo       support-logging     core-data       export-client
+    Given dependency services are deployed redis       support-logging     core-data       export-client
     And start time is recorded
-    When deploy service      export-distro
+    When deploy service redis      export-distro
     Then fetch startup time from service without recreate     export-distro
-    [Teardown]  Shutdown EdgeX
+    [Teardown]  Shutdown EdgeX Redis
 
 Get device-virtual start up with creating containers
-    Given dependency services are deployed mongo       support-logging     core-data       core-metadata       core-command
+    Given dependency services are deployed redis       support-logging     core-data       core-metadata       core-command
     And start time is recorded
-    When deploy service      device-virtual
+    When deploy service redis      device-virtual
     Then fetch startup time from service     device-virtual
-    [Teardown]  Stop EdgeX
+    [Teardown]  Stop EdgeX Redis
 
 Get device-virtual start up without creating containers
-    Given dependency services are deployed mongo       support-logging     core-data       core-metadata       core-command
+    Given dependency services are deployed redis       support-logging     core-data       core-metadata       core-command
     And start time is recorded
-    When deploy service      device-virtual
+    When deploy service redis      device-virtual
     Then fetch startup time from service without recreate     device-virtual
-    [Teardown]  Shutdown EdgeX
+    [Teardown]  Shutdown EdgeX Redis
 
 Show comparison tables for startup time with/without recreate containers
     show the comparison table

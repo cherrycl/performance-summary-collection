@@ -8,9 +8,9 @@ import pytz
 class TestMathFunc(unittest.TestCase):
 
     def test_find(self):
-        regexMsg = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z app=\S* \S*=\S* msg=\"Service started in: \d*.\d*m?s"
+        regexMsg = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z app=\S* \S*=\S* msg=\"Service started in: \d*.\d*[mµ]?s"
         regexTime = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{0,6}"
-        regexTime2 = r"\d*.\d*m?s"
+        regexTime2 = r"\d*.\d*[mµ]?s"
 
         msg = """
             level=INFO ts=2019-06-18T07:17:18.5245679Z app=edgex-core-data source=main.go:70 msg="Service started in: 120.62ms  resolved..."\nlevel=Service started in" 
