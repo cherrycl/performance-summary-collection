@@ -112,9 +112,12 @@ def show_the_summary_table_in_html():
             """.format(device)
 
         for event in result["devices"][device]:
-            html = html + """ 
-                    <td style="border: 1px solid black;">{} ms <br/>({} - {})</td>
-                """.format(event["exported"], event["pushed"], event["origin"])
+            if event["exported"] == "":
+                html = html + """<td style="border: 1px solid black;"> N/A </td>"""
+            else:
+                html = html + """ 
+                        <td style="border: 1px solid black;">{} ms <br/>({} - {})</td>
+                    """.format(event["exported"], event["pushed"], event["origin"])
 
         html = html + "</tr>"
 
