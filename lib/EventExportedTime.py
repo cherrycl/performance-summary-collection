@@ -1,7 +1,8 @@
-from robot.api import logger
+import math
 import http.client
 import json
 import time
+from robot.api import logger
 
 global result
 result = {
@@ -71,6 +72,7 @@ class EventExportedTime(object):
         for device in result["devices"]:
             for event in result["devices"][device]:
                 if "pushed" in event:
+                    event["origin"] = get_origin_time(event["origin"])
                     event["exported"] = event["pushed"] - event["origin"]
                     events.append(event)
                 else:
@@ -139,9 +141,9 @@ def get_device_events(device):
         raise Exception("Fail to enable MarkPushed.")
 
 
-def calculate_exported_time(dic):
-    for event in dic:
-        if "pushed" in event:
-            event["exported"] = event["pushed"] - event["origin"]
-        else:
-            event["exported"] = ""
+# check origin time is nanoseconds level and convert to milliseconds level
+def get_origin_time(origin_time):
+    if origin_time > math.pow(10, 18):
+        origin_time = int(origin_time / math.pow(10, 6))
+
+    return origin_time
