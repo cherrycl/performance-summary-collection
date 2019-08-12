@@ -17,7 +17,7 @@ This project has following execution steps:
 * Run the automation script executor by docker.
 * The automation script executor will deploy required services and collect the data or execute test.
 
-    .. image:: doc/env-structure.png
+    .. image:: img/env-structure.png
         :scale: 50%
         :alt: env-structure
 
@@ -144,7 +144,7 @@ After finishing the test, you can see the generated report under the **/path/to/
 
 Please open report/log.html to see the summary report, We create a "summary" test suite to gather all test result.
 
-    .. image:: doc/report-log.png
+    .. image:: img/report-log.png
         :scale: 50%
         :alt: report-log
 
