@@ -40,7 +40,7 @@ class EventExportedTime(object):
                 "publisher": "EdgeX"},
             "format": "JSON",
             "filter": {
-                "deviceIdentifiers": ["Random-Integer-Device", "Random-Float-Device", "Random-Boolean-Device"]},
+                "deviceIdentifiers": ["Random-Integer-Device", "Random-UnsignedInteger-Device", "Random-Boolean-Device"]},
             "enable": True,
             "destination": "MQTT_TOPIC"
         }
@@ -65,7 +65,7 @@ class EventExportedTime(object):
     def query_event(self):
         result["devices"]["Random-Integer-Device"] = get_device_events("Random-Integer-Device")
         result["devices"]["Random-Boolean-Device"] = get_device_events("Random-Boolean-Device")
-        result["devices"]["Random-Float-Device"] = get_device_events("Random-Float-Device")
+        result["devices"]["Random-UnsignedInteger-Device"] = get_device_events("Random-UnsignedInteger-Device")
 
     def fetch_the_exported_time(self):
         events = []
