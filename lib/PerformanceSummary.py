@@ -9,7 +9,8 @@ from robot.api import logger
 class PerformanceSummary(object):
 
     def show_reports(self):
-        ResourceUsage.show_the_summary_table_in_html()
+        ResourceUsage.show_the_summary_table_in_html(ResourceUsage.resource_usage_with_mongo)
+        ResourceUsage.show_the_summary_table_in_html(ResourceUsage.resource_usage_with_redis)
 
         StartupTimeHandler.show_the_comparison_table_in_html("Startup time:", AllServicesStartupAtOnce.all_up_time,
                                                              AllServicesStartupAtOnce.all_up_time_without_recreate)
