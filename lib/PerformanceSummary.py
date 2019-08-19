@@ -3,7 +3,7 @@ import PingResponse
 import AllServicesStartupAtOnce
 import AllServicesStartupOneByOne
 import StartupTimeHandler
-from robot.api import logger
+import EventExportedTime
 
 
 class PerformanceSummary(object):
@@ -38,3 +38,7 @@ class PerformanceSummary(object):
                                                              AllServicesStartupOneByOne.up_time_without_recreate)
 
         PingResponse.show_the_summary_table_in_html()
+
+        EventExportedTime.show_the_summary_table_in_html("mongo")
+        EventExportedTime.show_the_summary_table_in_html("redis")
+

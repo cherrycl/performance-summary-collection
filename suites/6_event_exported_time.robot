@@ -2,13 +2,22 @@
 Documentation   Measure the event exported time
 Library         ../lib/EdgeX.py
 Library         ../lib/EventExportedTime.py
-Suite Setup  EdgeX is deployed with compose file    docker-compose-mqtt.yml
-Suite Teardown  Shutdown EdgeX with compose file    docker-compose-mqtt.yml
 
 *** Test Cases ***
 Measure the event exported time
-    Given mark pushed config is enable
+    Given EdgeX is deployed with compose file    docker-compose-mqtt.yml
+    And mark pushed config is enable
     And export registration is added
-    When query event
-    Then fetch the exported time
-    And show the summary table
+    When query event with specified db  mongo
+    Then fetch the exported time with specified db  mongo
+    And show the summary table with specified db  mongo
+    And Shutdown EdgeX with compose file    docker-compose-mqtt.yml
+
+Measure the event exported time (redis, no security)
+    Given EdgeX with redis is deployed no secty
+    And mark pushed config is enable
+    And export registration is added
+    When query event with specified db  redis
+    Then fetch the exported time with specified db  redis
+    And show the summary table with specified db  redis
+    And Shutdown EdgeX Redis
