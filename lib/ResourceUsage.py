@@ -1,16 +1,16 @@
-import traceback
-from robot.api import logger
-import docker
+import copy
 import platform
+import traceback
 from datetime import datetime
-import sys
+
+import docker
+from robot.api import logger
 
 client = docker.from_env()
 
 global services
 services = {
     "edgex-core-consul": {"binary": ""},
-    "edgex-mongo": {"binary": ""},
     "edgex-core-data": {"binary": "/core-data"},
     "edgex-core-metadata": {"binary": "/core-metadata"},
     "edgex-core-command": {"binary": "/core-command"},
@@ -20,7 +20,8 @@ services = {
     "edgex-export-client": {"binary": "/export-client"},
     "edgex-export-distro": {"binary": "/export-distro"},
     "edgex-support-rulesengine": {"binary": "/edgex/edgex-support-rulesengine/support-rulesengine.jar"},
-    "edgex-device-virtual": {"binary": "/device-virtual"}
+    "edgex-device-virtual": {"binary": "/device-virtual"},
+    "edgex-mongo": {"binary": ""},
 }
 secty_services = {
     "edgex-vault": {"binary": ""},
@@ -32,22 +33,42 @@ secty_services = {
 }
 
 
+# global resource_usage_with_mongo
+
+
 class ResourceUsage(object):
 
     def __init__(self):
         self._result = ""
 
     def fetch_footprint_cpu_memory(self):
-        # fetch_by_service("edgex-core-data")
+        global resource_usage_with_mongo
+        resource_usage_with_mongo = {}
+
         for k in services:
-            fetch_by_service(k)
+            resource_usage_with_mongo[k] = fetch_by_service(services, k)
 
     def show_the_summary_table(self):
-        show_the_summary_table_in_html()
+        show_the_summary_table_in_html(resource_usage_with_mongo)
+
+    def fetch_footprint_cpu_memory_with_redis(self):
+        global resource_usage_with_redis
+        resource_usage_with_redis = {}
+
+        services_with_redis = copy.deepcopy(services)
+        services_with_redis.pop("edgex-mongo", None)
+        services_with_redis["edgex-redis"] = {"binary": ""}
+
+        for k in services_with_redis:
+            resource_usage_with_redis[k] = fetch_by_service(services_with_redis, k)
+
+    def show_the_summary_table_with_redis(self):
+        show_the_summary_table_in_html(resource_usage_with_redis)
 
 
-def fetch_by_service(service):
+def fetch_by_service(services_with_specified_db, service):
     containerName = service
+    usage = {}
     try:
         container = client.containers.get(containerName)
         imageName = container.attrs["Config"]["Image"]
@@ -57,18 +78,16 @@ def fetch_by_service(service):
         execResult = container.stats(stream=False)
         cpuUsage = calculateCPUPercent(execResult)
         memoryUsage = calculate_memory_usage(execResult)
-
-        if not services[containerName]["binary"]:
+        if not services_with_specified_db[containerName]["binary"]:
             binarySize = 0
         else:
-            _, stat = container.get_archive(services[containerName]["binary"])
+            _, stat = container.get_archive(services_with_specified_db[containerName]["binary"])
             binarySize = stat["size"]
-
-        services[containerName]["imageFootprint"] = format(int(imageSize) / 1000000, '.2f')
-        services[containerName]["binaryFootprint"] = format(int(binarySize) / 1000000, '.2f')
-        services[containerName]["cpuUsage"] = format(cpuUsage, '.2f')
-        services[containerName]["memoryUsage"] = format(int(memoryUsage) / 1000000, '.2f')
-        logger.info(containerName + " " + str(services[containerName]))
+        usage["imageFootprint"] = format(int(imageSize) / 1000000, '.2f')
+        usage["binaryFootprint"] = format(int(binarySize) / 1000000, '.2f')
+        usage["cpuUsage"] = format(cpuUsage, '.2f')
+        usage["memoryUsage"] = format(int(memoryUsage) / 1000000, '.2f')
+        logger.info(containerName + " " + str(usage))
         # logger.console("\n  "+containerName)
         # logger.console("\n  "+services[containerName]["binary"])
         # logger.console("--- Image size %d Bytes ---" % imageSize)
@@ -76,19 +95,21 @@ def fetch_by_service(service):
         # logger.console("--- CPU usage %d Bytes ---" % cpuUsage)
         # logger.console("--- Memory usage %d Bytes ---" % memoryUsage)
     except docker.errors.NotFound as error:
-        services[containerName]["imageFootprint"] = 0
-        services[containerName]["binaryFootprint"] = 0
-        services[containerName]["cpuUsage"] = 0
-        services[containerName]["memoryUsage"] = 0
+        usage["imageFootprint"] = 0
+        usage["binaryFootprint"] = 0
+        usage["cpuUsage"] = 0
+        usage["memoryUsage"] = 0
         logger.error(containerName + " container not found")
         logger.error(error)
     except:
-        services[containerName]["imageFootprint"] = 0
-        services[containerName]["binaryFootprint"] = 0
-        services[containerName]["cpuUsage"] = 0
-        services[containerName]["memoryUsage"] = 0
+        usage["imageFootprint"] = 0
+        usage["binaryFootprint"] = 0
+        usage["cpuUsage"] = 0
+        usage["memoryUsage"] = 0
         logger.error(containerName + " fail to fetch resource usage")
         logger.error(traceback.format_exc())
+
+    return usage
 
 
 def calculate_memory_usage(d):
@@ -152,7 +173,7 @@ def calculateCPUPercentUnix(v):
     return cpuPercent
 
 
-def show_the_summary_table_in_html():
+def show_the_summary_table_in_html(usages):
     html = """ 
     <h3 style="margin:0px">Resource usage:</h3>
     <table style="border: 1px solid black;white-space: initial;"> 
@@ -175,7 +196,7 @@ def show_the_summary_table_in_html():
         </tr>
     """
 
-    for k in services:
+    for k in usages:
         html = html + """ 
         <tr style="border: 1px solid black;">
             <td style="border: 1px solid black;">
@@ -195,8 +216,8 @@ def show_the_summary_table_in_html():
             </td>
         </tr>
     """.format(
-            k, services[k]["imageFootprint"], services[k]["binaryFootprint"], services[k]["memoryUsage"],
-            services[k]["cpuUsage"]
+            k, usages[k]["imageFootprint"], usages[k]["binaryFootprint"], usages[k]["memoryUsage"],
+            usages[k]["cpuUsage"]
         )
 
     html = html + "</table>"

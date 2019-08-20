@@ -6,10 +6,15 @@ from robot.api import logger
 
 global result
 result = {
-    "devices": {},
-    "total_average_exported_time": 0
+    "mongo": {
+        "devices": {},
+        "total_average_exported_time": 0
+    },
+    "redis": {
+        "devices": {},
+        "total_average_exported_time": 0
+    }
 }
-
 
 class EventExportedTime(object):
 
@@ -62,15 +67,15 @@ class EventExportedTime(object):
         # Sleep for device-virtual to generate the event
         time.sleep(60)
 
-    def query_event(self):
-        result["devices"]["Random-Integer-Device"] = get_device_events("Random-Integer-Device")
-        result["devices"]["Random-Boolean-Device"] = get_device_events("Random-Boolean-Device")
-        result["devices"]["Random-UnsignedInteger-Device"] = get_device_events("Random-UnsignedInteger-Device")
+    def query_event_with_specified_db(self, case):
+        result[case]["devices"]["Random-Integer-Device"] = get_device_events("Random-Integer-Device")
+        result[case]["devices"]["Random-Boolean-Device"] = get_device_events("Random-Boolean-Device")
+        result[case]["devices"]["Random-UnsignedInteger-Device"] = get_device_events("Random-UnsignedInteger-Device")
 
-    def fetch_the_exported_time(self):
+    def fetch_the_exported_time_with_specified_db(self,case):
         events = []
-        for device in result["devices"]:
-            for event in result["devices"][device]:
+        for device in result[case]["devices"]:
+            for event in result[case]["devices"][device]:
                 if "pushed" in event:
                     event["origin"] = get_origin_time(event["origin"])
                     event["exported"] = event["pushed"] - event["origin"]
@@ -84,13 +89,13 @@ class EventExportedTime(object):
             total_exported_time += e["exported"]
 
         if total_exported_time != 0:
-            result["total_average_exported_time"] = total_exported_time / len(events)
+            result[case]["total_average_exported_time"] = total_exported_time / len(events)
 
-    def show_the_summary_table(self):
-        show_the_summary_table_in_html()
+    def show_the_summary_table_with_specified_db(self, case):
+        show_the_summary_table_in_html(case)
 
 
-def show_the_summary_table_in_html():
+def show_the_summary_table_in_html(case):
     html = """ 
     <h3 style="margin:0px">Event exported time:</h3>
     <div style="margin:0px">Total average exported time: {} ms</div>
@@ -103,9 +108,9 @@ def show_the_summary_table_in_html():
                 Event exported time ( pushed - origin )
             </th>
         </tr>
-    """.format(result["total_average_exported_time"])
+    """.format(result[case]["total_average_exported_time"])
 
-    for device in result["devices"]:
+    for device in result[case]["devices"]:
         html = html + """ 
         <tr style="border: 1px solid black;">
             <td style="border: 1px solid black;">
@@ -113,7 +118,7 @@ def show_the_summary_table_in_html():
             </td>
             """.format(device)
 
-        for event in result["devices"][device]:
+        for event in result[case]["devices"][device]:
             if event["exported"] == "":
                 html = html + """<td style="border: 1px solid black;"> N/A </td>"""
             else:
@@ -138,7 +143,7 @@ def get_device_events(device):
         responseBody = res.read().decode()
         return json.loads(responseBody)
     else:
-        raise Exception("Fail to enable MarkPushed.")
+        raise Exception("Fail to query events.")
 
 
 # check origin time is nanoseconds level and convert to milliseconds level

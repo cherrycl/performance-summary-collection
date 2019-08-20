@@ -7,7 +7,6 @@ Documentation   Get footprint and CPU, memory usage
 Library         Process
 Library         ../lib/EdgeX.py
 Library         ../lib/ResourceUsage.py
-Suite Teardown  Shutdown EdgeX
 
 
 *** Test Cases ***
@@ -15,3 +14,10 @@ Get footprint and CPU, memory usage
     Given EdgeX is deployed
     When fetch footprint cpu memory
     Then show the summary table
+    And Shutdown EdgeX
+
+Get footprint and CPU, memory usage (redis, no security)
+    Given EdgeX with redis is deployed no secty
+    When fetch footprint cpu memory with redis
+    Then show the summary table with redis
+    And Shutdown EdgeX Redis
