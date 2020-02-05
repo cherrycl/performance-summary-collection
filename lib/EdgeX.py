@@ -10,7 +10,7 @@ import copy
 
 composeFolder = "docker-compose/"
 composeFolderNoRulesEngine = "docker-compose-no-rulesengine/"
-fullComposeFile = "docker-compose.yml"
+fullComposeFile = "docker-compose-no-secty.yml"
 composeFileNoSecty = "docker-compose-no-secty.yml"
 composeFileRedisNoSecty = "docker-compose-redis-no-secty.yml"
 mqttComposefile = "docker-compose-mqtt.yml"
