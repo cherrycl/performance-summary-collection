@@ -276,6 +276,7 @@ def run_command(cmd):
 
 def docker_compose_cmd():
     cwd = str(os.getcwd())
+    userhome = str(os.getenv("userhome"))
     return ["docker", "run", "--rm",
             "--env-file", get_env_file(), "-e", "PWD=" + cwd,
             "-v", userhome + "/.docker/config.json:/root/.docker/config.json",
