@@ -4,7 +4,8 @@ pipeline {
     stages {
         stage('Run test') {
             steps {
-                sh "docker run --rm --network host -v ${env.WORKSPACE}:${env.WORKSPACE} -w ${env.WORKSPACE} -v /var/run/docker.sock:/var/run/docker.sock iotech-services.jfrog.io/robotframework_${params.ARCH}:1.0.0 -d report ."
+                sh "docker run --rm --network host -v ${env.WORKSPACE}:${env.WORKSPACE} -w ${env.WORKSPACE} \
+                    -v /var/run/docker.sock:/var/run/docker.sock iotechsys/dev-testing-robotframework:1.0.0 -d report ."
             }
         }
 
