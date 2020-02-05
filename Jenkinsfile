@@ -1,10 +1,11 @@
 pipeline {
-    agent { label "${SLAVE}" }
+    agent { label "${params.SLAVE}" }
     options { timestamps() }
     stages {
         stage('Run test') {
             steps {
-                sh "docker run --rm --network host -v ${env.WORKSPACE}:${env.WORKSPACE} -w ${env.WORKSPACE} \
+                sh "docker run --rm --v ~/.docker/config.json:/root/.docker/config.json -network host \
+                    -v ${env.WORKSPACE}:${env.WORKSPACE} -w ${env.WORKSPACE} -e userhome=${env.HOME} \
                     -v /var/run/docker.sock:/var/run/docker.sock iotechsys/dev-testing-robotframework:1.0.0 -d report ."
             }
         }

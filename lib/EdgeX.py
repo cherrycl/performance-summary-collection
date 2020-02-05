@@ -278,6 +278,7 @@ def docker_compose_cmd():
     cwd = str(os.getcwd())
     return ["docker", "run", "--rm",
             "--env-file", get_env_file(), "-e", "PWD=" + cwd,
+            "-v", userhome + "/.docker/config.json:/root/.docker/config.json",
             "-v", cwd + ":" + cwd, "-w", cwd, "-v",
             "/var/run/docker.sock:/var/run/docker.sock", get_docker_compose_image()]
 
