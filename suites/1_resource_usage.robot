@@ -10,12 +10,6 @@ Library         ../lib/ResourceUsage.py
 
 
 *** Test Cases ***
-Get footprint and CPU, memory usage
-    Given EdgeX is deployed
-    When fetch footprint cpu memory
-    Then show the summary table
-    And Shutdown EdgeX
-
 Get footprint and CPU, memory usage (redis, no security)
     Given EdgeX with redis is deployed no secty
     When fetch footprint cpu memory with redis
