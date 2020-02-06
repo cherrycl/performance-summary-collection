@@ -19,7 +19,6 @@ services = {
     "edgex-support-scheduler": {"binary": "/support-scheduler"},
     "edgex-export-client": {"binary": "/export-client"},
     "edgex-export-distro": {"binary": "/export-distro"},
-    "edgex-support-rulesengine": {"binary": "/edgex/edgex-support-rulesengine/support-rulesengine.jar"},
     "edgex-device-virtual": {"binary": "/device-virtual"},
     "edgex-mongo": {"binary": ""},
 }
