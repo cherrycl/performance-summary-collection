@@ -91,20 +91,6 @@ Get support-scheduler start up without creating containers
     Then fetch startup time from service without recreate     support-scheduler
     [Teardown]  Shutdown EdgeX Redis
 
-Get support-rulesengine start up with creating containers
-    Given dependency services are deployed redis       support-logging     core-data       export-client
-    And start time is recorded
-    When deploy service redis      support-rulesengine
-    Then fetch startup time from service     support-rulesengine
-    [Teardown]  Stop EdgeX Redis
-
-Get support-rulesengine start up without creating containers
-    Given dependency services are deployed redis       support-logging     core-data       export-client
-    And start time is recorded
-    When deploy service redis      support-rulesengine
-    Then fetch startup time from service without recreate     support-rulesengine
-    [Teardown]  Shutdown EdgeX Redis
-
 Get export-client start up with creating containers
     Given dependency services are deployed redis       support-logging     core-data
     And start time is recorded

@@ -224,39 +224,39 @@ services:
       - metadata
       - redis
 
-  app-service-rules:
-    image: ${appServiceRules}
-    ports:
-      - "48100:48100"
-    container_name: edgex-app-service-configurable-rules
-    hostname: edgex-app-service-configurable-rules
-    networks:
-      edgex-network:
-        aliases:
-          - edgex-app-service-configurable-rules
-    environment:
-      <<: *common-variables
-      edgex_service: http://edgex-app-service-configurable-rules:48100
-      edgex_profile: rules-engine
-      Service_Host: edgex-app-service-configurable-rules
-      MessageBus_SubscribeHost_Host: edgex-core-data
-    depends_on:
-      - consul
-      - logging
-      - data
+  # app-service-rules:
+  #   image: ${appServiceRules}
+  #   ports:
+  #     - "48100:48100"
+  #   container_name: edgex-app-service-configurable-rules
+  #   hostname: edgex-app-service-configurable-rules
+  #   networks:
+  #     edgex-network:
+  #       aliases:
+  #         - edgex-app-service-configurable-rules
+  #   environment:
+  #     <<: *common-variables
+  #     edgex_service: http://edgex-app-service-configurable-rules:48100
+  #     edgex_profile: rules-engine
+  #     Service_Host: edgex-app-service-configurable-rules
+  #     MessageBus_SubscribeHost_Host: edgex-core-data
+  #   depends_on:
+  #     - consul
+  #     - logging
+  #     - data
 
-  rulesengine:
-    image: ${supportRulesengine}
-    ports:
-      - "48075:48075"
-    container_name: edgex-support-rulesengine
-    hostname: edgex-support-rulesengine
-    networks:
-      edgex-network:
-        aliases:
-          - edgex-support-rulesengine
-    depends_on:
-      - app-service-rules
+  # rulesengine:
+  #   image: ${supportRulesengine}
+  #   ports:
+  #     - "48075:48075"
+  #   container_name: edgex-support-rulesengine
+  #   hostname: edgex-support-rulesengine
+  #   networks:
+  #     edgex-network:
+  #       aliases:
+  #         - edgex-support-rulesengine
+  #   depends_on:
+  #     - app-service-rules
 
   export-client:
     image: ${exportClient}
