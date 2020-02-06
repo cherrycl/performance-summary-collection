@@ -24,7 +24,7 @@ services = {
     "support-scheduler": {"composeName": "scheduler", "port": 48085, "url": "/api/v1/ping"},
     "export-client": {"composeName": "export-client", "port": 48071, "url": "/api/v1/ping"},
     "export-distro": {"composeName": "export-distro", "port": 48070, "url": "/api/v1/ping"},
-    "support-rulesengine": {"composeName": "rulesengine", "port": 48075, "url": "/api/v1/ping"},
+    #"support-rulesengine": {"composeName": "rulesengine", "port": 48075, "url": "/api/v1/ping"},
     "device-virtual": {"composeName": "device-virtual", "port": 49990, "url": "/api/v1/ping"},
 }
 
