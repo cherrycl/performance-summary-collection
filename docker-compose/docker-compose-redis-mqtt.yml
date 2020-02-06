@@ -42,7 +42,7 @@ services:
     networks:
       - edgex-network
     volumes:
-      - db-data:/data/db
+      - db-data:/data
       - log-data:/edgex/logs
       - consul-config:/consul/config
       - consul-data:/consul/data
@@ -59,7 +59,6 @@ services:
         aliases:
             - edgex-core-consul
     volumes:
-      - db-data:/data/db
       - log-data:/edgex/logs
       - consul-config:/consul/config
       - consul-data:/consul/data
@@ -68,6 +67,7 @@ services:
 
   config-seed:
     image: ${configSeed}
+    command: ["--profile=docker", "--cmd=/edgex/cmd-redis"]
     container_name: edgex-config-seed
     hostname: edgex-core-config-seed
     networks:
@@ -77,7 +77,6 @@ services:
     environment:
       <<: *common-variables            
     volumes:
-      - db-data:/data/db
       - log-data:/edgex/logs
       - consul-config:/consul/config
       - consul-data:/consul/data
@@ -95,9 +94,6 @@ services:
       - edgex-network
     volumes:
       - db-data:/data
-      - log-data:/edgex/logs
-      - consul-config:/consul/config
-      - consul-data:/consul/data
     depends_on:
       - volume
 
@@ -109,10 +105,9 @@ services:
     hostname: edgex-support-logging
     networks:
       - edgex-network
-    environment:
+    environment: 
       <<: *common-variables
     volumes:
-      - db-data:/data/db
       - log-data:/edgex/logs
       - consul-config:/consul/config
       - consul-data:/consul/data
@@ -150,12 +145,12 @@ services:
     environment:
       <<: *common-variables
     volumes:
-      - db-data:/data/db
       - log-data:/edgex/logs
       - consul-config:/consul/config
       - consul-data:/consul/data
     depends_on:
       - logging
+      - redis
 
   metadata:
     image: ${coreMetadata}
@@ -168,12 +163,12 @@ services:
     environment:
       <<: *common-variables
     volumes:
-      - db-data:/data/db
       - log-data:/edgex/logs
       - consul-config:/consul/config
       - consul-data:/consul/data
     depends_on:
       - logging
+      - redis
 
   data:
     image: ${coreData}
@@ -187,12 +182,12 @@ services:
     environment:
       <<: *common-variables
     volumes:
-      - db-data:/data/db
       - log-data:/edgex/logs
       - consul-config:/consul/config
       - consul-data:/consul/data
     depends_on:
       - logging
+      - redis
 
   command:
     image: ${coreCommand}
@@ -205,7 +200,6 @@ services:
     environment:
       <<: *common-variables
     volumes:
-      - db-data:/data/db
       - log-data:/edgex/logs
       - consul-config:/consul/config
       - consul-data:/consul/data
@@ -223,46 +217,46 @@ services:
     environment:
       <<: *common-variables
     volumes:
-      - db-data:/data/db
       - log-data:/edgex/logs
       - consul-config:/consul/config
       - consul-data:/consul/data
     depends_on:
       - metadata
+      - redis
 
-  # app-service-rules:
-  #   image: edgexfoundry/docker-app-service-configurable:1.0.0
-  #   ports:
-  #     - "48100:48100"
-  #   container_name: edgex-app-service-configurable-rules
-  #   hostname: edgex-app-service-configurable-rules
-  #   networks:
-  #     edgex-network:
-  #       aliases:
-  #         - edgex-app-service-configurable-rules
-  #   environment:
-  #     <<: *common-variables
-  #     edgex_service: http://edgex-app-service-configurable-rules:48100
-  #     edgex_profile: rules-engine
-  #     Service_Host: edgex-app-service-configurable-rules
-  #     MessageBus_SubscribeHost_Host: edgex-core-data
-  #   depends_on:
-  #     - consul
-  #     - logging
-  #     - data
+  app-service-rules:
+    image: ${appServiceRules}
+    ports:
+      - "48100:48100"
+    container_name: edgex-app-service-configurable-rules
+    hostname: edgex-app-service-configurable-rules
+    networks:
+      edgex-network:
+        aliases:
+          - edgex-app-service-configurable-rules
+    environment:
+      <<: *common-variables
+      edgex_service: http://edgex-app-service-configurable-rules:48100
+      edgex_profile: rules-engine
+      Service_Host: edgex-app-service-configurable-rules
+      MessageBus_SubscribeHost_Host: edgex-core-data
+    depends_on:
+      - consul
+      - logging
+      - data
 
-  # rulesengine:
-  #   image: edgexfoundry/docker-support-rulesengine:1.1.0
-  #   ports:
-  #     - "48075:48075"
-  #   container_name: edgex-support-rulesengine
-  #   hostname: edgex-support-rulesengine
-  #   networks:
-  #     edgex-network:
-  #       aliases:
-  #         - edgex-support-rulesengine
-  #   depends_on:
-  #     - app-service-rules
+  rulesengine:
+    image: ${supportRulesengine}
+    ports:
+      - "48075:48075"
+    container_name: edgex-support-rulesengine
+    hostname: edgex-support-rulesengine
+    networks:
+      edgex-network:
+        aliases:
+          - edgex-support-rulesengine
+    depends_on:
+      - app-service-rules
 
   export-client:
     image: ${exportClient}
@@ -306,27 +300,28 @@ services:
       EXPORT_DISTRO_MQTTS_CERT_FILE: none
       EXPORT_DISTRO_MQTTS_KEY_FILE: none
 
-  #################################################################
-  # Device Services
-  #################################################################
+#################################################################
+# Device Services
+#################################################################
 
   device-virtual:
     image: ${deviceVirtual}
     ports:
-      - "49990:49990"
+    - "49990:49990"
     container_name: edgex-device-virtual
+    hostname: edgex-device-virtual
     networks:
       edgex-network:
         aliases:
-          - edgex-device-virtual
+        - edgex-device-virtual
     volumes:
-      - db-data:/data/db
-      - log-data:/edgex/logs
-      - consul-config:/consul/config
-      - consul-data:/consul/data
+    - db-data:/data/db
+    - log-data:/edgex/logs
+    - consul-config:/consul/config
+    - consul-data:/consul/data
     depends_on:
-      - data
-      - command
+    - data
+    - command
 
   mqttbroker:
     image: eclipse-mosquitto
