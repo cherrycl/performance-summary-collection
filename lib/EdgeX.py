@@ -10,21 +10,22 @@ import copy
 
 composeFolder = "docker-compose/"
 composeFolderNoRulesEngine = "docker-compose-no-rulesengine/"
-fullComposeFile = "docker-compose-no-secty.yml"
-composeFileNoSecty = "docker-compose-no-secty.yml"
+fullComposeFile = "docker-compose-redis-no-secty.yml"
+composeFileNoSecty = "docker-compose-redis-no-secty.yml"
 composeFileRedisNoSecty = "docker-compose-redis-no-secty.yml"
-mqttComposefile = "docker-compose-mqtt.yml"
+mqttComposefile = "docker-compose-redis-mqtt.yml"
 
 services = {
     "core-data": {"composeName": "data", "port": 48080, "url": "/api/v1/ping"},
     "core-metadata": {"composeName": "metadata", "port": 48081, "url": "/api/v1/ping"},
     "core-command": {"composeName": "command", "port": 48082, "url": "/api/v1/ping"},
-    "support-logging": {"composeName": "logging", "port": 48061, "url": "/api/v1/ping"},
+    #"support-logging": {"composeName": "logging", "port": 48061, "url": "/api/v1/ping"},
     "support-notifications": {"composeName": "notifications", "port": 48060, "url": "/api/v1/ping"},
     "support-scheduler": {"composeName": "scheduler", "port": 48085, "url": "/api/v1/ping"},
-    "export-client": {"composeName": "export-client", "port": 48071, "url": "/api/v1/ping"},
-    "export-distro": {"composeName": "export-distro", "port": 48070, "url": "/api/v1/ping"},
+    #"export-client": {"composeName": "export-client", "port": 48071, "url": "/api/v1/ping"},
+    #"export-distro": {"composeName": "export-distro", "port": 48070, "url": "/api/v1/ping"},
     #"support-rulesengine": {"composeName": "rulesengine", "port": 48075, "url": "/api/v1/ping"},
+    "app-service-rules": {"composeName": "app-service-rules", "port": 48100, "url": "/api/v1/ping"},
     "device-virtual": {"composeName": "device-virtual", "port": 49990, "url": "/api/v1/ping"},
 }
 
@@ -44,9 +45,10 @@ class EdgeX(object):
         cmd = docker_compose_cmd()
         cmd.extend(['-f', composeFolder + fullComposeFile, 'up', '-d'])
         run_command(cmd)
-
+        time.sleep(10)
         # Check services are started
         check_dependencies_services_startup(services)
+        
     
     def edgex_is_deployed_no_secty(self):
         # Deploy services
@@ -206,9 +208,9 @@ class EdgeX(object):
         cmd = docker_compose_cmd()
         cmd.extend(['-f', composeFolder + fullComposeFile,'up', '-d', "mongo"])
         run_command(cmd)
-        cmd = docker_compose_cmd()
-        cmd.extend(['-f', composeFolder + fullComposeFile,'up', '-d', "config-seed"])
-        run_command(cmd)
+        #cmd = docker_compose_cmd()
+        #cmd.extend(['-f', composeFolder + fullComposeFile,'up', '-d', "config-seed"])
+        #run_command(cmd)
         for k in dependencies:
             cmd = docker_compose_cmd()
             cmd.extend(['-f', composeFolder + fullComposeFile,'up', '-d', dependencies[k]["composeName"]])
@@ -226,9 +228,9 @@ class EdgeX(object):
         cmd = docker_compose_cmd()
         cmd.extend(['-f', composeFolder + composeFileRedisNoSecty,'up', '-d', "redis"])
         run_command(cmd)
-        cmd = docker_compose_cmd()
-        cmd.extend(['-f', composeFolder + composeFileRedisNoSecty,'up', '-d', "config-seed"])
-        run_command(cmd)
+        #cmd = docker_compose_cmd()
+        #cmd.extend(['-f', composeFolder + composeFileRedisNoSecty,'up', '-d', "config-seed"])
+        #run_command(cmd)
         for k in dependencies:
             cmd = docker_compose_cmd()
             cmd.extend(['-f', composeFolder + composeFileRedisNoSecty,'up', '-d', dependencies[k]["composeName"]])

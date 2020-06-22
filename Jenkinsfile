@@ -4,9 +4,18 @@ pipeline {
     stages {
         stage('Run test') {
             steps {
-                sh "docker run --rm -v ~/.docker/config.json:/root/.docker/config.json --network host \
-                    -v ${env.WORKSPACE}:${env.WORKSPACE} -w ${env.WORKSPACE} -e userhome=${env.HOME} \
-                    -v /var/run/docker.sock:/var/run/docker.sock iotechsys/dev-testing-robotframework:1.0.0 -d report ."
+                script {
+                    try {
+                        sh "docker run --rm -v ~/.docker/config.json:/root/.docker/config.json --network host \
+                            -v ${env.WORKSPACE}:${env.WORKSPACE} -w ${env.WORKSPACE} -e userhome=${env.HOME} \
+                            -v /var/run/docker.sock:/var/run/docker.sock iotechsys/dev-testing-robotframework:1.0.0 --exclude skipped -d report ."
+                    } catch (e){
+                        echo "got error"
+                    } finally {
+                        sh 'docker system prune -a -f'
+                        sh 'docker volume prune -f'
+                    }
+                }
             }
         }
 
@@ -17,7 +26,8 @@ pipeline {
                 publishHTML(
                     target: [
                         allowMissing: false,
-                        keepAll: false,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
                         reportDir: 'report',
                         reportFiles: 'report.html',
                         reportName: 'Performance summary collection']

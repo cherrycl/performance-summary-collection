@@ -68,6 +68,7 @@ class EventExportedTime(object):
         time.sleep(60)
 
     def query_event_with_specified_db(self, case):
+        time.sleep(100)
         result[case]["devices"]["Random-Integer-Device"] = get_device_events("Random-Integer-Device")
         result[case]["devices"]["Random-Boolean-Device"] = get_device_events("Random-Boolean-Device")
         result[case]["devices"]["Random-UnsignedInteger-Device"] = get_device_events("Random-UnsignedInteger-Device")

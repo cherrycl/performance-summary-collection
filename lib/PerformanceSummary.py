@@ -9,7 +9,7 @@ import EventExportedTime
 class PerformanceSummary(object):
 
     def show_reports(self):
-        ResourceUsage.show_the_summary_table_in_html(ResourceUsage.resource_usage_with_mongo)
+        # ResourceUsage.show_the_summary_table_in_html(ResourceUsage.resource_usage_with_mongo)
         ResourceUsage.show_the_summary_table_in_html(ResourceUsage.resource_usage_with_redis)
 
         StartupTimeHandler.show_the_comparison_table_in_html("Startup time:", AllServicesStartupAtOnce.all_up_time,
@@ -39,6 +39,6 @@ class PerformanceSummary(object):
 
         PingResponse.show_the_summary_table_in_html()
 
-        EventExportedTime.show_the_summary_table_in_html("mongo")
+        # EventExportedTime.show_the_summary_table_in_html("mongo")
         EventExportedTime.show_the_summary_table_in_html("redis")
 

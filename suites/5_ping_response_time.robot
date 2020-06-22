@@ -22,17 +22,20 @@ Measure the ping response time of ping API for each edgex service
     ${res} =    GET   http://localhost:48085/api/v1/ping        headers={ "Accept": "text/plain" }
     Record response   edgex-support-scheduler        ${res}
 
-    ${res} =    GET   http://localhost:48061/api/v1/ping        headers={ "Accept": "text/plain" }
-    Record response   edgex-support-logging        ${res}
+    #${res} =    GET   http://localhost:48061/api/v1/ping        headers={ "Accept": "text/plain" }
+    #Record response   edgex-support-logging        ${res}
 
     ${res} =    GET   http://localhost:48060/api/v1/ping        headers={ "Accept": "text/plain" }
     Record response   edgex-support-notifications        ${res}
 
-    ${res} =    GET   http://localhost:48071/api/v1/ping        headers={ "Accept": "text/plain" }
-    Record response   edgex-export-client        ${res}
+    #${res} =    GET   http://localhost:48071/api/v1/ping        headers={ "Accept": "text/plain" }
+    #Record response   edgex-export-client        ${res}
 
-    ${res} =    GET   http://localhost:48070/api/v1/ping        headers={ "Accept": "text/plain" }
-    Record response   edgex-export-distro        ${res}
+    #${res} =    GET   http://localhost:48070/api/v1/ping        headers={ "Accept": "text/plain" }
+    #Record response   edgex-export-distro        ${res}
+
+    ${res} =    GET   http://localhost:48100/api/v1/ping        headers={ "Accept": "text/plain" }
+    Record response   edgex-app-service-configurable-rules        ${res}
 
     ${res} =    GET   http://localhost:49990/api/v1/ping        headers={ "Accept": "text/plain" }
     Record response   edgex-device-virtual        ${res}
