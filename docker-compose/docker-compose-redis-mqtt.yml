@@ -363,14 +363,13 @@ services:
       Service_Host: app-service-mqtt-export
       Service_Port: 48097
       MessageBus_SubscribeHost_Host: edgex-core-data
-      Database_Host: edgex-mongo
-      Database_Username: appservice
-      Database_Password: password
-      EDGEX_SECURITY_SECRET_STORE: "false"
       Writable_Pipeline_Functions_MQTTSend_Addressable_Address: mqtt-broker
       Writable_LogLevel: DEBUG
     networks:
       - edgex-network
+    depends_on:
+      - consul
+      - data
 
   mqtt-broker:
     image: eclipse-mosquitto
